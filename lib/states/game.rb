@@ -60,6 +60,8 @@ module TowerDefense
 
         @level.fixed_update(dt)
 
+        pop_state if @level.city_health <= 0
+
         @credits_label.value = format("Credits: $%i", @level.credits)
         @enemies_label.value = format("Enemies: %03i", @level.enemies_remaining)
         @city_health_label.value = format("City Health: %03i%%", @level.city_health)
