@@ -3,6 +3,8 @@ module TowerDefense
     TILE_SIZE = Level::TILE_SIZE
     HALF_TILE_SIZE = TILE_SIZE / 2
 
+    attr_reader :position
+
     def initialize(options = {})
       @options = options
       @level = @options[:level]
@@ -19,6 +21,9 @@ module TowerDefense
     end
 
     def draw
+    end
+
+    def placable_draw
     end
 
     def fixed_update(dt)

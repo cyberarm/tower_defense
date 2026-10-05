@@ -1,6 +1,8 @@
 module TowerDefense
   class Level
     TILE_SIZE = 32
+    HALF_TILE_SIZE = TILE_SIZE / 2
+
     # extract tile types from image colors
     TILE_TYPES = {
       ground: 0xff_ffffff,
@@ -56,6 +58,9 @@ module TowerDefense
             when :spawner
               @entities << Entities::Spawner.new(level: self, grid: @pathfinding_grid, x: x * TILE_SIZE, y: y * TILE_SIZE)
               @tiles << :ground
+            when :turret
+              @entities << Entities::Turret.new(level: self, x: x * TILE_SIZE, y: y * TILE_SIZE)
+              @tiles << :permanent_wall
             else
               @tiles << type
             end
@@ -84,12 +89,6 @@ module TowerDefense
       end
 
       @entities.each(&:draw)
-
-      # @flow_field.each do |key, node|
-      #   x, y, z = key.split(":").map(&:to_i)
-      #
-      #   Gosu.draw_rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, 0x11_00ff00)
-      # end
     end
 
     def fixed_update(dt)
@@ -106,6 +105,15 @@ module TowerDefense
 
     def scale(window_width, window_height)
       window_width / map_width.to_f
+    end
+
+    def tile_type_at(x:, y:)
+      index = y * width + x
+
+      return nil if index.negative?
+      return nil if index >= @tiles.size
+
+      @tiles[index]
     end
   end
 end

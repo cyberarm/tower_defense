@@ -14,5 +14,7 @@ require_relative "lib/states/game"
 require_relative "lib/entity"
 require_relative "lib/entities/spawner"
 require_relative "lib/entities/big_triangle"
+require_relative "lib/entities/turret"
+require_relative "lib/entities/bullet"
 
 TowerDefense::Window.new(width: 1280, height: 800, resizable: true).show

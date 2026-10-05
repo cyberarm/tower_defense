@@ -1,10 +1,14 @@
 module TowerDefense
   module Entities
     class BigTriangle < Entity
+      attr_accessor :health
+
       def setup
         @size = TowerDefense::Level::TILE_SIZE * 0.75
         @half_size = @size / 2
         @speed = 0.5
+        @health = 30
+        @credits = 10
       end
 
       def draw
@@ -25,9 +29,16 @@ module TowerDefense
       end
 
       def fixed_update(dt)
+        # Big Triangle has been defeated!
+        if @health <= 0
+          @level.credits += @credits
+          @level.entities.delete(self)
+          return
+        end
+
+        # Big Triangle has breached the defenses!!!
         target_node = @path.first
         unless target_node
-          # TODO: Explode and damage city
           @level.city_health -= 10
           @level.entities.delete(self)
           return
