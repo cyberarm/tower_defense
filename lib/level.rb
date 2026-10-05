@@ -23,24 +23,48 @@ module TowerDefense
       cannon: 0xff_613583
     }
 
-    attr_reader :width, :height
+    attr_reader :width, :height, :entities, :max_city_health
+    attr_accessor :city_health, :enemies_remaining, :credits
 
     def initialize(map_image:)
+      @entities = []
+      @pathfinding_grid = CyberarmEngine::Pathfinding::Grid.new
+
+      @credits = 0
+      @enemies_remaining = 100
+      @city_health = 100
+
       @tiles = []
       @width = map_image.width
       @height = map_image.height
 
+      x = 0
+      y = 0
       bytes = map_image.to_blob.unpack("C*")
       bytes.each_slice(4) do |rgba|
         argb = rgba.rotate(-1)
         color = argb.pack("C4").unpack1("N")
 
+        if x == @width
+          x = 0
+          y += 1
+        end
+
         TILE_TYPES.each do |type, col|
           if color == col
-            @tiles << type
+            case type
+            when :spawner
+              @entities << Entities::Spawner.new(level: self, grid: @pathfinding_grid, x: x * TILE_SIZE, y: y * TILE_SIZE)
+              @tiles << :ground
+            else
+              @tiles << type
+            end
+            @pathfinding_grid.add_node(x: x, y: y) if type == :ground || type == :spawner
             break
           end
         end
+
+        x += 1
       end
     end
 
@@ -58,6 +82,18 @@ module TowerDefense
 
         x += 1
       end
+
+      @entities.each(&:draw)
+
+      # @flow_field.each do |key, node|
+      #   x, y, z = key.split(":").map(&:to_i)
+      #
+      #   Gosu.draw_rect(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE, 0x11_00ff00)
+      # end
+    end
+
+    def fixed_update(dt)
+      @entities.each { |e| e.fixed_update(dt) }
     end
 
     def map_width

@@ -8,19 +8,19 @@ module TowerDefense
           stack(width: 1.0, margin: LARGE_PADDING, padding: LARGE_PADDING, style_class: [:rounded_box], background_nine_slice_color: 0xff_63452c) do
             # info bar
             flow(width: 0.5, h_align: :center, style_class: [:rounded_box], background_nine_slice_color: 0x11_cdab8f, padding: PADDING) do
-              tagline "Credits: $0"
+              @credits_label = tagline "Credits: ?"
               flow(fill: true)
-              tagline "Enemies: 100/100"
+              @enemies_label = tagline "Enemies: ?"
               flow(fill: true)
-              tagline "City Health: 100%"
+              @city_health_label = tagline "City Health: ?"
             end
 
             # tool bar
             flow(width: 0.5, h_align: :center, margin_top: LARGE_PADDING) do
               flow(fill: true)
-              button "Wall", margin_left: PADDING, enabled: false, tip: "$100 • Block enemy path"
+              # button "Wall", margin_left: PADDING, enabled: false, tip: "$100 • Block enemy path"
               button "Turret", margin_left: PADDING, enabled: false, tip: "$1 000 • Cut down enemies"
-              button "Cannon", margin_left: PADDING, enabled: false, tip: "$10 000 • Mow down enemies"
+              # button "Cannon", margin_left: PADDING, enabled: false, tip: "$10 000 • Mow down enemies"
               button "Sell", margin_left: MASSIVE_PADDING, tip: "Sell item for 100% of its original value"
               flow(fill: true)
             end
@@ -30,7 +30,6 @@ module TowerDefense
         end
 
         @tile_size = 32
-        @pathfinding_grid = CyberarmEngine::Pathfinding::Grid.new
         @level = Level.new(map_image: get_image("data/level.png"))
       end
 
@@ -54,6 +53,16 @@ module TowerDefense
         Gosu.flush
 
         super
+      end
+
+      def fixed_update(dt)
+        super
+
+        @level.fixed_update(dt)
+
+        @credits_label.value = format("Credits: $%i", @level.credits)
+        @enemies_label.value = format("Enemies: %03i", @level.enemies_remaining)
+        @city_health_label.value = format("City Health: %03i%%", @level.city_health)
       end
     end
   end
