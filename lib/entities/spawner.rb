@@ -13,7 +13,11 @@ module TowerDefense
         @flow_field = CyberarmEngine::Pathfinding::BreadthFirstSearch.search(graph: @grid, start: @start_node)
 
         @spawn_interval = 1_000
+        @base_spawn_interval = 1_000
+        @min_spawn_interval = 50
         @last_spawn_interval = 0
+
+        @per_turret_speedup = 50
 
         @late_inited = true
       end
@@ -29,7 +33,9 @@ module TowerDefense
 
         @position.w += 1.0
 
-        if @level.enemies_remaining.positive? && Gosu.milliseconds - @last_spawn_interval >= @spawn_interval
+        @spawn_interval = (@base_spawn_interval - ((@level.entities.select { |e| e.is_a?(Turret) }.count - 2) * @per_turret_speedup)).clamp(@min_spawn_interval, @base_spawn_interval)
+
+        if Gosu.milliseconds - @last_spawn_interval >= @spawn_interval
           @last_spawn_interval = Gosu.milliseconds
 
           @level.entities << BigTriangle.new(
@@ -39,7 +45,6 @@ module TowerDefense
                                               level: @level
                                             )
 
-          @level.enemies_remaining -= 1
         end
       end
 

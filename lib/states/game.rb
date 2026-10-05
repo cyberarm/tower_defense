@@ -79,11 +79,15 @@ module TowerDefense
 
         @level.fixed_update(dt)
 
-        pop_state if @level.city_health <= 0
+        if @level.city_health <= 0
+          pop_state
+          push_state(GameOver, level: @level)
+        end
+
 
         @turret_button.enabled = @level.credits >= Entities::Turret::COST
         @credits_label.value = format("Credits: $%i", @level.credits)
-        @enemies_label.value = format("Enemies: %03i", @level.enemies_remaining)
+        @enemies_label.value = format("Enemies: %03i", @level.enemies_killed)
         @city_health_label.value = format("City Health: %03i%%", @level.city_health)
       end
 
@@ -95,10 +99,13 @@ module TowerDefense
           @placable = nil
         when Gosu::MS_LEFT
           return unless @placable
+          return unless @level.credits >= @placable.cost
+          return unless turret_placable?
 
           @level.credits -= @placable.cost
           @level.entities << @placable
-          @placable = nil
+
+          @placable = Entities::Turret.new(level: @level, x: window.mouse_x, y: window.mouse_y)
         end
       end
 

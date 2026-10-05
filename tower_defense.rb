@@ -10,6 +10,7 @@ require_relative "lib/level"
 require_relative "lib/window"
 require_relative "lib/states/main_menu"
 require_relative "lib/states/game"
+require_relative "lib/states/game_over"
 
 require_relative "lib/entity"
 require_relative "lib/entities/spawner"

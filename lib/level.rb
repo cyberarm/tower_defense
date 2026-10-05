@@ -26,14 +26,14 @@ module TowerDefense
     }
 
     attr_reader :width, :height, :entities, :max_city_health
-    attr_accessor :city_health, :enemies_remaining, :credits
+    attr_accessor :city_health, :enemies_killed, :credits
 
     def initialize(map_image:)
       @entities = []
       @pathfinding_grid = CyberarmEngine::Pathfinding::Grid.new
 
       @credits = 0
-      @enemies_remaining = 100
+      @enemies_killed = 0
       @city_health = 100
 
       @tiles = []

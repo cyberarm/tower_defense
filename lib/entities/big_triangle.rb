@@ -31,6 +31,7 @@ module TowerDefense
       def fixed_update(dt)
         # Big Triangle has been defeated!
         if @health <= 0
+          @level.enemies_killed += 1
           @level.credits += @credits
           @level.entities.delete(self)
           return
