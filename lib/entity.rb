@@ -3,7 +3,7 @@ module TowerDefense
     TILE_SIZE = Level::TILE_SIZE
     HALF_TILE_SIZE = TILE_SIZE / 2
 
-    attr_reader :position
+    attr_reader :position, :cost
 
     def initialize(options = {})
       @options = options

@@ -50,7 +50,7 @@ module TowerDefense
           Gosu.scale(@level_scale, @level_scale) do
             @level.draw_map
             @placable&.draw
-            @placable&.placable_draw
+            @placable&.placable_draw if turret_placable?
 
             if @placable && !turret_placable?
               Gosu.draw_rect(
@@ -81,17 +81,37 @@ module TowerDefense
 
         pop_state if @level.city_health <= 0
 
-        # @turret_button.enabled = @level.credits >= 100
+        @turret_button.enabled = @level.credits >= Entities::Turret::COST
         @credits_label.value = format("Credits: $%i", @level.credits)
         @enemies_label.value = format("Enemies: %03i", @level.enemies_remaining)
         @city_health_label.value = format("City Health: %03i%%", @level.city_health)
+      end
+
+      def button_down(id)
+        super
+
+        case id
+        when Gosu::KB_ESCAPE, Gosu::KB_SPACE
+          @placable = nil
+        when Gosu::MS_LEFT
+          return unless @placable
+
+          @level.credits -= @placable.cost
+          @level.entities << @placable
+          @placable = nil
+        end
       end
 
       def turret_placable?
         return false unless @placable
 
         grid_cell = @placable.grid_cell
-        pp [@placable.grid_cell, @level.tile_type_at(x: grid_cell.x, y: grid_cell.y)]
+
+        return false unless @level.tile_type_at(x: grid_cell.x, y: grid_cell.y) == :permanent_wall
+
+        return false if @level.entities.find { |e| e.grid_cell == grid_cell }
+
+        true
       end
     end
   end

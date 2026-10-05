@@ -1,7 +1,11 @@
 module TowerDefense
   module Entities
     class Turret < Entity
+      COST = 100
+
       def setup
+        @cost = COST
+
         @color = 0xff_26a269
         @gun_color = 0xff_9a9996
         @laser_color = 0x88_8ff0a4
@@ -24,7 +28,7 @@ module TowerDefense
 
       def draw
         # base
-        Gosu.draw_circle(@position.x, @position.y, HALF_TILE_SIZE * 0.8, 36, @color, @position.z)
+        Gosu.draw_circle(@position.x, @position.y, HALF_TILE_SIZE * 0.8, 64, @color, @position.z)
 
         Gosu.rotate(@position.w, @position.x, @position.y) do
           # laser
